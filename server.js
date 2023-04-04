@@ -22,6 +22,7 @@ const app = express();
 
 app.use(express.json());
 app.use(cors())
+app.use(rollbar.errorHandler())
 
 // Add up the total health of all the robots
 const calculateTotalHealth = (robots) =>
@@ -50,8 +51,10 @@ const calculateHealthAfterAttack = ({ playerDuo, compDuo }) => {
 
 app.get("/api/robots", (req, res) => {
   try {
+    rollbar.info("Robots displayed successfully")
     res.status(200).send(botsArr);
   } catch (error) {
+    rollbar.error("error getting bots")
     console.error("ERROR GETTING BOTS", error);
     res.sendStatus(400);
   }
@@ -59,6 +62,7 @@ app.get("/api/robots", (req, res) => {
 
 app.get("/api/robots/shuffled", (req, res) => {
   try {
+    rollbar.info("Robots were shuffled successfully")
     let shuffled = shuffle(bots);
     res.status(200).send(shuffled);
   } catch (error) {
@@ -68,6 +72,8 @@ app.get("/api/robots/shuffled", (req, res) => {
 });
 
 app.post("/api/duel", (req, res) => {
+  rollbar.info('someone dueled the bots')
+
   try {
     const { compDuo, playerDuo } = req.body;
 
